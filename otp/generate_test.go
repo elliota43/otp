@@ -1,4 +1,4 @@
-package hotp
+package otp
 
 import (
 	"testing"
@@ -25,7 +25,7 @@ func TestGenerateHOTP(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		actual := generateHOTP(secret, tc.counter, 6)
+		actual := GenerateHOTP(secret, tc.counter, 6)
 		if actual != tc.expected {
 			t.Errorf("generateHOTP(secret, %d, 6) = %s; expected %s", tc.counter, actual, tc.expected)
 		}
@@ -51,7 +51,7 @@ func TestGenerate(t *testing.T) {
 	for _, tc := range tests {
 		testTime := time.Unix(tc.timestamp, 0)
 
-		actual := Generate(secret, 30, testTime, 8)
+		actual := GenerateTOTP(secret, 30, testTime, 8)
 		if actual != tc.expected {
 			t.Errorf("Generate(secret, 30, %d, 8) = %s; expected %s", tc.timestamp, actual, tc.expected)
 		}
