@@ -8,6 +8,7 @@ import (
 	"crypto/sha512"
 	"crypto/subtle"
 	"encoding/base32"
+	"encoding/base64"
 	"encoding/binary"
 	"fmt"
 	"hash"
@@ -15,6 +16,8 @@ import (
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/skip2/go-qrcode"
 )
 
 // Algorithm represents the hashing algorithm used for the HMAC computation.
@@ -228,4 +231,22 @@ func BuildKeyURI(base32Secret string, opts ...Option) string {
 	}
 
 	return u.String()
+}
+
+// GenerateQRCodePNG returns a raw PNG byte slice representing the QR code for the given URI.
+// It uses a medium error recovery level (15%) and the specified width/height in pixels.
+func GenerateQRCodePNG(uri string, size int) ([]byte, error) {
+	return qrcode.Encode(uri, qrcode.Medium, size)
+}
+
+// GenerateQRCodeDataURI returns a Base64 encoded Data URI of the QR code.
+// This string can be injected directly into the `src` attribute of an HTML <img> tag.
+func GenerateQRCodeDataURI(uri string, size int) (string, error) {
+	pngBytes, err := GenerateQRCodePNG(uri, size)
+	if err != nil {
+		return "", err
+	}
+
+	base64Encoded := base64.StdEncoding.EncodeToString(pngBytes)
+	return fmt.Sprintf("data:image/png;base64,%s", base64Encoded), nil
 }

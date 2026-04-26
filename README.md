@@ -48,8 +48,18 @@ func main() {
         otp.WithAccountName("your@company.com"),
         )
 
-    // you would typically pass this URI to a QR code generator library
-    // and render the image to the user on your frontend.
+    // Generate a Base64-encoded QR code (256x256 pixels)
+    qrDataURI, err := otp.GenerateQRCodeDataURI(uri, 256)
+    if err != nil {
+        log.Fatalf("failed to generate QR code: %v", err)
+    }
+
+    // you can now pass qrDataURI directly to your HTML frontend:
+    // <img src="{{ qrDataURI }}" alt="2FA QR Code" />
+    fmt.Println("Embed this Data URI into your HTML img tag:")
+    fmt.Println(qrDataURI)
+
+    // or you can just use the URI string for a different custom process:
     fmt.Println("Scan this URI:", uri)
 }
 ```

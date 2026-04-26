@@ -186,3 +186,26 @@ func TestBuildKeyURI(t *testing.T) {
 		t.Errorf("expected overridden algorithm SHA256, got %s", parsed2.Query().Get("algorithm"))
 	}
 }
+
+func TestGenerateQRCode(t *testing.T) {
+	uri := "otpauth://totp/Acme:alice@example.com?secret=JBSWY3DPEHPK3PXP"
+
+	pngBytes, err := GenerateQRCodePNG(uri, 256)
+	if err != nil {
+		t.Fatalf("failed to generate PNG: %v", err)
+	}
+
+	// check for PNG header
+	if len(pngBytes) < 8 || string(pngBytes[:8]) != "\x89PNG\r\n\x1a\n" {
+		t.Errorf("output does not appear to be a valid PNG image")
+	}
+
+	dataURI, err := GenerateQRCodeDataURI(uri, 256)
+	if err != nil {
+		t.Fatalf("failed to generate Data URI: %v", err)
+	}
+
+	if !strings.HasPrefix(dataURI, "data:image/png;base64,") {
+		t.Errorf("data URI is missing the correct image/png prefix")
+	}
+}
